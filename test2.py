@@ -1,10 +1,10 @@
+# review this code
 import pprint
 import urllib.parse
 import json5
 from qwen_agent.agents import Assistant
 from qwen_agent.tools.base import BaseTool, register_tool
 
-# Step 1 (Optional): Add a custom tool named `my_image_gen`.
 @register_tool('my_image_gen')
 class MyImageGen(BaseTool):
     # The `description` tells the agent the functionality of this tool.
@@ -28,12 +28,6 @@ class MyImageGen(BaseTool):
 
 # Step 2: Configure the LLM you are using.
 llm_cfg = {
-    # Use the model service provided by DashScope:
-    #'model': 'qwen-max',
-    #'model_server': 'dashscope',
-    # 'api_key': 'YOUR_DASHSCOPE_API_KEY',
-    # It will use the `DASHSCOPE_API_KEY' environment variable if 'api_key' is not set here.
-
     # Use a model service compatible with the OpenAI API, such as vLLM or Ollama:
      'model': 'qwen2.5-code',
      'model_server': 'http://localhost:8000/v1',  # base_url, also known as api_base

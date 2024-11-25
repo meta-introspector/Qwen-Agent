@@ -21,6 +21,7 @@ def register_llm(model_type):
 
     def decorator(cls):
         LLM_REGISTRY[model_type] = cls
+        print("adding model_type",model_type,cls)
         return cls
 
     return decorator

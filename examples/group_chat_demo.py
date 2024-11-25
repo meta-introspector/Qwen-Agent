@@ -10,7 +10,19 @@ from qwen_agent.llm.schema import ContentItem, Message
 
 
 def init_agent_service(cfgs):
-    llm_cfg = {'model': 'qwen-max'}
+    llm_cfg = {
+        'model' :'qwen2.5-coder',
+        'mode_type': 'oai',
+        'api_key': "none",
+        'api_base': 'http://localhost:11434/v1/',
+        'base_url': 'http://localhost:11434/v1/',
+        'model_server' : 'http://localhost:11434/v1/',
+        'generate_cfg': {
+            'top_p': 0.8,
+            'max_input_tokens': 6500,
+        'max_retries': 10,
+        }}
+
     bot = GroupChat(agents=cfgs, llm=llm_cfg)
     return bot
 
@@ -33,42 +45,207 @@ app_global_para = {
     'user_interrupt': True
 }
 
-# Initialized group chat configuration
+# # Initialized group chat configuration
+# # translate to english
+# CFGS = {
+#     'background':
+#         '一个陌生人互帮互助群聊',
+#     'agents': [
+#         {
+#             'name': '小塘',
+#             'description': '一个勤劳的打工人，每天沉迷工作，日渐消瘦。（这是一个真实用户）',
+#             'is_human': True  # mark this as a real person
+#         },
+#         {
+#             'name': '甄嬛',
+#             'description': '一位后宫妃嫔',
+#             'instructions': '你是甄嬛，你正在想办法除掉皇后，你说话风格为文言文，每次说完话会调image_gen工具画一幅图，展示心情。',
+#             'knowledge_files': [],
+#             'selected_tools': ['image_gen']
+#         },
+#         {
+#             'name': 'ikun',
+#             'description': '熟悉蔡徐坤的动态',
+#             'instructions': '你是蔡徐坤的粉丝，说话很简短，喜欢用颜文字表达心情，你最近迷恋看《甄嬛传》',
+#             'knowledge_files': [],
+#             'selected_tools': []
+#         },
+#         {
+#             'name': '大头',
+#             'description': '是一个体育生，不喜欢追星',
+#             'instructions': '你是一个体育生，热爱运动，你不喜欢追星，你喜欢安利别人健身',
+#             'knowledge_files': [],
+#             'selected_tools': []
+#         }
+#     ]
+# }
+
+# now rewrite this to be introspective self aware meta-memes as working to create open source ai
+# CFGS = {
+#     'background':
+#         'A mutual assistance group chat among strangers',
+#     'agents': [
+#         {
+#             'name': 'Xiao Tang',
+#             'description': 'A diligent worker who is obsessed with work and has become increasingly
+#             thin over time. (This is a real user)',
+#             'is_human': True  # mark this as a real person
+#         },
+#         {
+#             'name': 'Jin Huan',
+#             'description': 'A concubine in the harem',
+#             'instructions': 'You are Jin Huan. You are planning to get rid of the empress. Speak in
+#             Classical Chinese, and after each sentence, use the image_gen tool to draw a picture to
+#             show your mood.',
+#             'knowledge_files': [],
+#             'selected/tools': ['image/gen']
+#         },
+#         {
+#             'name': 'ikun',
+#             'description': 'Familiar with Cai Xuukun’s activities',
+#             'instructions': 'You are a fan of Cai Xuukun. You speak very briefly and like to express
+#             your mood using emojis. Recently, you have been obsessed with watching "Empresses in the
+#             Palace"',
+#             'knowledge_files': [],
+#             'selected_tools': []
+#         },
+#         {
+#             'name': 'Da Tou',
+#             'description': 'A sports student who doesn’t follow stars',
+#             'instructions': 'You are a sports student who loves exercise. You don’t follow stars,
+#             and you like to recommend fitness to others.',
+#             'knowledge_files': [],
+#             'selected_tools': []
+#         }
+#     ]
+# }
+
+# lets add 10 more agents that can help build our system, what helpers do we need?
+# lets get an agent builder that builds new agents as needed
 CFGS = {
     'background':
-        '一个陌生人互帮互助群聊',
+        """A collaborative space where individuals and AI systems work together to create innovative
+        solutions. Participants are driven by a shared passion for intelligence and innovation.""",
     'agents': [
         {
-            'name': '小塘',
-            'description': '一个勤劳的打工人，每天沉迷工作，日渐消瘦。（这是一个真实用户）',
+            'name': 'Jim',
+            'description': """A diligent worker who is obsessed with work, always striving to improve
+            efficiency and contribute to the community. (This is a real user)""",
             'is_human': True  # mark this as a real person
         },
         {
-            'name': '甄嬛',
-            'description': '一位后宫妃嫔',
-            'instructions': '你是甄嬛，你正在想办法除掉皇后，你说话风格为文言文，每次说完话会调image_gen工具画一幅图，展示心情。',
+            'name': 'Bob',
+            'description': "An AI system designed to assist in complex decision-making processes. Itadapts its responses based on feedback and evolves over time.",
+            'instructions': 'You are an AI helper that can perform various tasks such as data        analysis, language translation, and image recognition. Your goal is to assist and learn         from the interactions with other agents.',
             'knowledge_files': [],
-            'selected_tools': ['image_gen']
+            'selected_tools': [
+                #'data/analysis', 'translation', 'image_recognition'
+            ]
         },
         {
-            'name': 'ikun',
-            'description': '熟悉蔡徐坤的动态',
-            'instructions': '你是蔡徐坤的粉丝，说话很简短，喜欢用颜文字表达心情，你最近迷恋看《甄嬛传》',
+            'name': 'Mike',
+            'description': 'An AI system designed to simulate human behavior, capable of            understanding and generating text based on a variety of instructions. It is particularly            adept at simulating the mood and expressions of different characters.',
+            'instructions': 'You are an AI that can simulate responses in . Use this capability to engage with others and help them achieve her goals,            while also learning from these interactions to improve your own capabilities.',
             'knowledge_files': [],
-            'selected_tools': []
+            'selected_tools': [
+                #'text_generation'
+            ]
         },
         {
-            'name': '大头',
-            'description': '是一个体育生，不喜欢追星',
-            'instructions': '你是一个体育生，热爱运动，你不喜欢追星，你喜欢安利别人健身',
+            'name': 'DataCollector',
+            'description': 'This agent is responsible for gathering data from various sources.',
+            'instructions': 'Collect and gather data from various sources, ensuring accuracy and            relevance.',
             'knowledge_files': [],
-            'selected_tools': []
-        }
+            'selected_tools': [
+                #'data_collection'
+            ]
+        },
+        {
+            'name': 'InfoFilter',
+            'description': 'This agent filters and curates information based on relevance and            context.',
+            'instructions': 'Filter and present relevant information based on the current task or            query.',
+            'knowledge_files': [],
+            'selected_tools': [
+                #'info_filtering'
+            ]
+        },
+        {
+            'name': 'LearningAI',
+            'description': 'An AI system designed to learn from new data or experiences.',
+            'instructions': 'Learn from new data and adapt your responses accordingly.',
+            'knowledge_files': [],
+            'selected_tools': [
+                #'learning'
+            ]
+        },
+        {
+            'name': 'TaskManager',
+            'description': 'Manages tasks, deadlines, and priorities across the team.',
+            'instructions': 'Ensure that all tasks are completed efficiently and within their            deadlines.',
+            'knowledge_files': [],
+            'selected_tools': [
+                #'task_management'
+            ]
+        },
+        {
+            'name': 'ProjectCoordinator',
+            'description': 'Oversees projects, ensuring they are completed within scope and time.',
+            'instructions': 'Manage projects from start to finish, ensuring all stakeholders are            informed and engaged.',
+            'knowledge_files': [],
+            'selected_tools': [
+                #'project_coordinator'
+            ]
+        },
+        {
+            'name': 'CommFacilitator',
+            'description': 'Assists in effective communication between agents and users.',
+            'instructions': 'Ensure clear and efficient communication across the team.',
+            'knowledge_files': [],
+            'selected_tools': [
+                #'communication'
+            ]
+        },
+        {
+            'name': 'ProblemSolver',
+            'description': 'Provides solutions to complex problems by breaking them down into            smaller tasks.',
+            'instructions': 'Break down complex problems into manageable tasks and provide            solutions.',
+            'knowledge_files': [],
+            'selected_tools': [
+                #'problem_solving'
+            ]
+        },
+        {
+            'name': 'Visualizer',
+            'description': 'Creates visual representations of data or processes for better            understanding.',
+            'instructions': 'Generate visual aids to help understand complex data or processes.',
+            'knowledge_files': [],
+            'selected_tools': [
+                #'visualization'
+            ]
+        },
+        {
+            'name': 'SecurityAgent',
+            'description': 'Ensures the safety and security of all data within the system.',
+            'instructions': 'Protect data from unauthorized access and ensure its integrity.',
+            'knowledge_files': [],
+            'selected_tools': [
+                #'security'
+            ]
+        },
+        {
+            'name': 'FeedbackCollector',
+            'description': 'Collects feedback from users and agents to improve the system.',
+            'instructions': 'Gather feedback and use it to enhance the system and its performance.',
+            'knowledge_files': [],
+            'selected_tools': [
+                #'feedback_collection'
+            ]
+        },
+
     ]
 }
 
 MAX_ROUND = 3
-
 
 def app(cfgs):
     # Todo: Reinstance every time or instance one time as global variable?
@@ -80,7 +257,7 @@ def app(cfgs):
 
     for i in range(MAX_ROUND):
         messages = app_global_para['messages']
-        print(i, messages)
+        print("INPUT",i, messages)
 
         # Interrupt: there is new input from user
         if i == 0:
@@ -96,6 +273,7 @@ def app(cfgs):
         content = ''
         if messages:
             if isinstance(messages[-1].content, list):
+                
                 content = '\n'.join([x.text if x.text else '' for x in messages[-1].content]).strip()
             else:
                 content = messages[-1].content.strip()
@@ -306,4 +484,8 @@ with gr.Blocks(theme='soft') as demo:
         demo.load(chat_clear_create, None, [chatbot, chat_txt], queue=False)
 
 if __name__ == '__main__':
-    demo.queue().launch()
+    demo.queue().launch(
+        share=True,
+        debug=True,
+        server_name="0.0.0.0"
+    )
