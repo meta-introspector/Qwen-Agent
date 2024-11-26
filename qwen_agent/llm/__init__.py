@@ -5,24 +5,38 @@ from .azure import TextChatAtAzure
 from .base import LLM_REGISTRY, BaseChatModel, ModelServiceError
 from .oai import TextChatAtOAI
 from .openvino import OpenVINO
-from .qwen_dashscope import QwenChatAtDS
-from .qwenvl_dashscope import QwenVLChatAtDS
+#from .qwen_dashscope import QwenChatAtDS
+#from .qwenvl_dashscope import QwenVLChatAtDS
 from .qwenvl_oai import QwenVLChatAtOAI
 
 
-def get_chat_model(cfg: Union[dict, str] = 'qwen-plus') -> BaseChatModel:
+def get_chat_model(cfg: Union[dict, str] = {
+        'model' :'qwen2.5-coder',
+        'mode_type': 'oai',
+        'api_key': "none",
+        'api_base': 'http://localhost:11434/v1/',
+        'base_url': 'http://localhost:11434/v1/',
+        'model_server' : 'http://localhost:11434/v1/',
+        'generate_cfg': {
+            'top_p': 0.8,
+            'max_input_tokens': 6500,
+        'max_retries': 10,
+        }}
+) -> BaseChatModel:
+    print("GET MODEL", cfg)
     """The interface of instantiating LLM objects.
 
     Args:
         cfg: The LLM configuration, one example is:
           cfg = {
               # Use the model service provided by DashScope:
-              'model': 'qwen-max',
-              'model_server': 'dashscope',
+#              'model': 'qwen-max',
+#              'model_server': 'dashscope',
 
               # Use your own model service compatible with OpenAI API:
+    model:'qwen2.5-coder',
               # 'model': 'Qwen',
-              # 'model_server': 'http://127.0.0.1:7905/v1',
+              'model_server': 'http://localhost:11434/v1/',
 
               # (Optional) LLM hyper-parameters:
               'generate_cfg': {
@@ -41,10 +55,10 @@ def get_chat_model(cfg: Union[dict, str] = 'qwen-plus') -> BaseChatModel:
     if 'model_type' in cfg:
         model_type = cfg['model_type']
         if model_type in LLM_REGISTRY:
-            if model_type in ('oai', 'qwenvl_oai'):
-                if cfg.get('model_server', '').strip() == 'dashscope':
-                    cfg = copy.deepcopy(cfg)
-                    cfg['model_server'] = 'https://dashscope.aliyuncs.com/compatible-mode/v1'
+#            if model_type in ('oai', 'qwenvl_oai'):
+#                if cfg.get('model_server', '').strip() == 'dashscope':
+#                    cfg = copy.deepcopy(cfg)
+#                    cfg['model_server'] = 'https://dashscope.aliyuncs.com/compatible-mode/v1'
             return LLM_REGISTRY[model_type](cfg)
         else:
             raise ValueError(f'Please set model_type from {str(LLM_REGISTRY.keys())}')
@@ -62,12 +76,8 @@ def get_chat_model(cfg: Union[dict, str] = 'qwen-plus') -> BaseChatModel:
 
     model = cfg.get('model', '')
 
-    if 'qwen-vl' in model:
-        model_type = 'qwenvl_dashscope'
-        return LLM_REGISTRY[model_type](cfg)
-
     if 'qwen' in model:
-        model_type = 'qwen_dashscope'
+        model_type = cfg.get('model_type', 'oai')
         return LLM_REGISTRY[model_type](cfg)
 
     raise ValueError(f'Invalid model cfg: {cfg}')

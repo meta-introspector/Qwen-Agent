@@ -251,7 +251,7 @@ class GroupChat(Agent, MultiAgentHub):
     def _init_agents_from_config(self, cfgs: Dict, llm: Optional[Union[Dict, BaseChatModel]] = None) -> List[Agent]:
 
         def _build_system_from_role_config(config: Dict):
-            role_chat_prompt = """你是{name}。{description}\n\n{instructions}"""
+            role_chat_prompt = """You are the friendly and talkative and creative {name}. {description}\n\n{instructions}"""
 
             name = config.get('name', '').strip()
             description = config.get('description', '').lstrip('\n').rstrip()
@@ -259,7 +259,7 @@ class GroupChat(Agent, MultiAgentHub):
             if len(instructions) >= len(description):
                 description = ''  # redundant, as we already have instructions
             else:
-                description = f'你的简介是：{description}'
+                description = f'Introduction：{description}'
             prompt = role_chat_prompt.format(name=name, description=description, instructions=instructions)
 
             knowledge_files = config.get('knowledge_files', [])
@@ -267,9 +267,9 @@ class GroupChat(Agent, MultiAgentHub):
             return prompt, knowledge_files, selected_tools
 
         agents = []
-        groupchat_background = '你在一个群聊中，'
+        groupchat_background = 'Your part of a self improving master mind，'
         if cfgs.get('background', ''):
-            groupchat_background += f'群聊背景为：{cfgs["background"]}'
+            groupchat_background += f'The context is：{cfgs["background"]}'
 
         for cfg in cfgs['agents']:
             system, knowledge_files, selected_tools = _build_system_from_role_config(cfg)
@@ -285,8 +285,9 @@ class GroupChat(Agent, MultiAgentHub):
                 agents.append(
                     Assistant(llm=llm,
                               system_message=groupchat_background + system +
-                              f'\n\n群里其他成员包括：{", ".join(other_agents)}，如果你想和别人对话，可以@成员名字。\n' +
-                              '\n\n讲话时请直接输出内容，不要输出你的名字。\n\n其他群友的发言历史以如下格式展示：\n角色名: 说话内容',
+                              #f'\n\n群里其他成员包括：{", ".join(other_agents)}，如果你想和别人对话，可以@成员名字。\n' +
+                              #'\n\n讲话时请直接输出内容，不要输出你的名字。\n\n其他群友的发言历史以如下格式展示：\n角色名: 说话内容',
+                              f'\n\nOther members in the group include: {", ".join(other_agents)}, you can @member/name to communicate with them. \n' + "\nThe conversation history of other group members is displayed                              as follows:\nCharacter Name: Speech Content",                              
                               files=knowledge_files,
                               function_list=selected_tools,
                               name=cfg['name'],

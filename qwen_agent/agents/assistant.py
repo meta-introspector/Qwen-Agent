@@ -146,7 +146,7 @@ def get_current_date_str(
         cur_time = cur_time.timetuple()
         date_str = f'当前时间：{cur_time.tm_year}年{cur_time.tm_mon}月{cur_time.tm_mday}日，星期'
         date_str += ['一', '二', '三', '四', '五', '六', '日'][cur_time.tm_wday]
-        date_str += '。'
+        date_str += '.'
     else:
         raise NotImplementedError
     return date_str

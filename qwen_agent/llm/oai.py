@@ -58,7 +58,9 @@ class TextChatAtOAI(BaseFnCallModel):
                 if 'request_timeout' in kwargs:
                     kwargs['timeout'] = kwargs.pop('request_timeout')
 
+                #print("OPENAI",api_kwargs);
                 client = openai.OpenAI(**api_kwargs)
+                
                 return client.chat.completions.create(*args, **kwargs)
 
             self._chat_complete_create = _chat_complete_create
@@ -69,20 +71,24 @@ class TextChatAtOAI(BaseFnCallModel):
         delta_stream: bool,
         generate_cfg: dict,
     ) -> Iterator[List[Message]]:
+        print("messages1", str(messages)[0:120])
         messages = self.convert_messages_to_dicts(messages)
         try:
             response = self._chat_complete_create(model=self.model, messages=messages, stream=True, **generate_cfg)
             if delta_stream:
                 for chunk in response:
                     if chunk.choices and hasattr(chunk.choices[0].delta, 'content') and chunk.choices[0].delta.content:
+                        print("reponse1",chunk.choices[0].delta.content)
                         yield [Message(ASSISTANT, chunk.choices[0].delta.content)]
             else:
                 full_response = ''
                 for chunk in response:
                     if chunk.choices and hasattr(chunk.choices[0].delta, 'content') and chunk.choices[0].delta.content:
                         full_response += chunk.choices[0].delta.content
+                        #print("reponse2",chunk.choices[0].delta.content)
                         yield [Message(ASSISTANT, full_response)]
         except OpenAIError as ex:
+            print("ERROR")
             raise ModelServiceError(exception=ex)
 
     def _chat_no_stream(
@@ -90,6 +96,7 @@ class TextChatAtOAI(BaseFnCallModel):
         messages: List[Message],
         generate_cfg: dict,
     ) -> List[Message]:
+        #print("messages2", messages)
         messages = self.convert_messages_to_dicts(messages)
         try:
             response = self._chat_complete_create(model=self.model, messages=messages, stream=False, **generate_cfg)
